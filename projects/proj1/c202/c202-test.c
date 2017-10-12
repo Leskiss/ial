@@ -104,20 +104,42 @@ int main (int argc, char* argv[]) {
 	STACK_SIZE = 8;
 	ptrstack = (tStack*) malloc(sizeof(tStack));
 
+	//
+	tStack vlastniStack;
+
 	printf("\n[TEST01] Stack initialization\n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	use_stack_init(ptrstack);
 	stackPrint(ptrstack);
+
+	// Vlastni init testy
+	printf ("Inicializace struktury:\npred: %d\n", vlastniStack.top);
+        stackInit (&vlastniStack);
+        printf ("po: %d\nInicializace s NULL:\n", vlastniStack.top);
+        stackInit (NULL);
 
 	printf("\n[TEST02] Checking a state of the stack\n" );
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	use_stack_empty(ptrstack);
 	use_stack_full(ptrstack);
 
+	// Vlastni stack empty a stack full testy
+	printf ("Stack empty:\nZasobnik prazdny: %d\n", stackEmpty (&vlastniStack));
+	vlastniStack.top = 1;
+	printf ("Zasobnik neni prazdny: %d\n", stackEmpty (&vlastniStack));
+	printf ("Stack full\nPrazdny zasobnik: %d\n", stackFull (&vlastniStack));
+	vlastniStack.top = 7;
+	printf ("Stack full\nPlny zasobnik: %d\n", stackFull (&vlastniStack));
+	vlastniStack.top = 8;
+	printf ("Stack full\nPres kapacitu: %d\n", stackFull (&vlastniStack));
+
 	printf("\n[TEST03] Pushing a first item 'A'\n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	use_stack_push (ptrstack, 'A');
 	stackPrint(ptrstack);
+
+	//
+	printf ("Index vrcholu zasobniku: %d\n", ptrstack->top);
 
 	printf("\n[TEST04] Checking a state of the stack again\n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
@@ -134,6 +156,7 @@ int main (int argc, char* argv[]) {
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	for (int i=0; i<8; i++)
 		use_stack_push(ptrstack, '0'+i);
+	printf ("Index: %d\n", ptrstack->top);
 	stackPrint(ptrstack);
 
 	printf("\n[TEST07] Checking a state of the stack\n" );
@@ -141,13 +164,25 @@ int main (int argc, char* argv[]) {
 	use_stack_empty(ptrstack);
 	use_stack_full(ptrstack);
 
+	// Zkouska pridani dalsiho prvku
+	printf ("Pridani dalsiho prvku pres kapacitu:\n");
+	use_stack_push(ptrstack, 8);
+
 	printf("\n[TEST08] Removing all items one by one\n");
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");
 	for (int i=0; i<8; i++) {
     use_stack_top(ptrstack);
   	use_stack_pop(ptrstack);
   }
+	printf ("Index: %d\n", ptrstack->top);
 	stackPrint(ptrstack);
+
+	// Zkouska zobrazeni a odebrani prvku z prazdneho zasobniku
+	printf ("Zobrazeni zadneho prvku ze zasobniku:\n");
+	use_stack_top(ptrstack);
+	printf ("Odebrani zadneho prvku ze zasobniku:\n");
+	use_stack_pop(ptrstack);
+	printf ("Index: %d\n", ptrstack->top);
 
 	printf("\n[TEST09] Final check of the stack\n" );
 	printf("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n");

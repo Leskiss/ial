@@ -61,7 +61,11 @@ void stackInit ( tStack* s ) {
 ** předpokládejte, že tato situace nenastane. 
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+// V pripade ze adresa stacku neni NULL se zasobnik inicializuje tak, ze nastavi top na -1, jinak vyhodi chybu
+
+	if (s != NULL) s->top = -1;
+	else stackError (SERR_INIT);
+
 }
 
 int stackEmpty ( const tStack* s ) {
@@ -71,7 +75,8 @@ int stackEmpty ( const tStack* s ) {
 ** typu "if ( true ) b=true else b=false".
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+	return (s->top == -1) ? 1 : 0;
+
 }
 
 int stackFull ( const tStack* s ) {
@@ -84,7 +89,10 @@ int stackFull ( const tStack* s ) {
 ** Funkci implementujte jako jediný příkaz.
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+// Pro vraceni nuly musi byt v zasobniku mene nez je jeho kapacita, kvuli moznym testum jsem zamerne nepouzil !=
+
+	return (s->top < STACK_SIZE - 1) ? 0 : 1;
+
 }
 
 void stackTop ( const tStack* s, char* c ) {
@@ -98,7 +106,11 @@ void stackTop ( const tStack* s, char* c ) {
 ** funkci stackEmpty.
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+// stackEmpty vraci 1 kdyz je prazdny zasobnik, proto neni treba nic porovnavat v podminkove casti, tehdy se vypise chyba, jinak se do ukazatele c nahraje hodnota z vrcholu zasobniku
+
+	if (stackEmpty (s)) stackError (SERR_TOP);
+	else *c = s->arr[s->top];
+
 }
 
 
@@ -115,7 +127,10 @@ void stackPop ( tStack* s ) {
 ** 
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+// Pokud neni zasobnik prazdny, proste jen snizim index vrcholu zasobniku
+
+	if (!stackEmpty (s)) s->top--;
+
 }
 
 
@@ -128,7 +143,14 @@ void stackPush ( tStack* s, char c ) {
 ** funkci stackFull.
 */
 
-	  solved = 0;                      /* V případě řešení, smažte tento řádek! */
+// Pokud je plno, pusti se chyba, pokud, zvysi se index vrchulu zasobniku na ktery se prida novy znak
+
+	if (stackFull (s)) stackError (SERR_PUSH);
+	else {
+		s->top++;
+		s->arr[s->top] = c;
+	}
+
 }
 
 /* Konec c202.c */
