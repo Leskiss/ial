@@ -49,6 +49,18 @@ int solved;
 ** nadeklarovat a používat pomocnou proměnnou typu char.
 */
 void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
+	
+	char top;	
+
+	if (s != NULL && postExpr != NULL && postLen != NULL && !stackEmpty (s)) { // Osetreni proti operaci s nenaalokovanymi parametry a prazdnym zasobnikem
+		do {
+			stackTop (s, &top);
+			stackPop (s);
+			postExpr[*postLen] = top;
+			(*postLen)++;
+		} while (top != '(' || stackEmpty (s)); // Osetreni proti zacykleni kdyby ve stacku zavorka chybela
+		(*postLen)--; // Kvuli jednoduchosti cyklu nakonec pridam do stringu i zavorku, timto krokem ji zase odstranim
+	}
 
 }
 
@@ -63,6 +75,18 @@ void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
 ** představuje parametr postLen, výstupním polem znaků je opět postExpr.
 */
 void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
+	
+	char top;
+
+	if (s != NULL && postExpr != NULL && postLen != NULL) {	// Osetreni proti operaci s nenaalokovanymi parametry
+		if (!stackEmpty (s)) stackTop (s, &top); // Nejdrive nactu znak z vrcholu zasobniku pokud je, bohuzel tohle nejde preskocit, protoze funkce stackTop nevraci znak pomoci navratove hodnoty
+		if (!stackEmpty (s) && (top == '*' || top == '/')) { // Pokud je na zasobniku prioritni operator, umistim jej do stringu a ze stacku odstranim
+			postExpr[*postLen] = top;
+                        stackPop (s);
+                        (*postLen)++;
+		}
+		stackPush (s, c); // Novy operator vlozim do stacku vzdy
+	}
 
 }
 
