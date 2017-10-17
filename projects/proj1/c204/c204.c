@@ -58,8 +58,8 @@ void untilLeftPar ( tStack* s, char* postExpr, unsigned* postLen ) {
 			stackPop (s);
 			postExpr[*postLen] = top;
 			(*postLen)++;
-		} while (top != '(' || stackEmpty (s)); // Osetreni proti zacykleni kdyby ve stacku zavorka chybela
-		(*postLen)--; // Kvuli jednoduchosti cyklu nakonec pridam do stringu i zavorku, timto krokem ji zase odstranim
+		} while (top != '(' && !stackEmpty (s)); // Osetreni proti zacykleni kdyby ve stacku zavorka chybela - vyuzivam to i v pripade, ze mam vypsat veci ze stacku pred =
+		if (postExpr[*postLen - 1] == '(') (*postLen)--; // Kvuli jednoduchosti cyklu nakonec pridam do stringu i zavorku, timto krokem ji zase odstranim
 	}
 
 }
@@ -80,12 +80,13 @@ void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 
 	if (s != NULL && postExpr != NULL && postLen != NULL) {	// Osetreni proti operaci s nenaalokovanymi parametry
 		if (!stackEmpty (s)) stackTop (s, &top); // Nejdrive nactu znak z vrcholu zasobniku pokud je, bohuzel tohle nejde preskocit, protoze funkce stackTop nevraci znak pomoci navratove hodnoty
-		if (!stackEmpty (s) && (top == '*' || top == '/')) { // Pokud je na zasobniku prioritni operator, umistim jej do stringu a ze stacku odstranim
+		if (stackEmpty (s) || top == '(' || ((top == '+' || top == '-') && (c == '*' || c == '/'))) stackPush (s, c); // Ciste na zasobnik vlozim operator, pokud je prazdny, je pred nim l. zavorka nebo operator s nizsi prioritou
+		else { // jinak operator ze zasobniku premistim do stringu a spustim fci znovu
 			postExpr[*postLen] = top;
                         stackPop (s);
                         (*postLen)++;
+			doOperation (s, c, postExpr, postLen);
 		}
-		stackPush (s, c); // Novy operator vlozim do stacku vzdy
 	}
 
 }
@@ -136,8 +137,33 @@ void doOperation ( tStack* s, char c, char* postExpr, unsigned* postLen ) {
 */
 char* infix2postfix (const char* infExpr) {
 
-  solved = 0;                        /* V případě řešení smažte tento řádek! */
-  return NULL;                /* V případě řešení můžete smazat tento řádek. */
+	unsigned infIndex = 0, postIndex = 0;
+	char *postExpr = malloc (sizeof (char) * MAX_LEN);
+	tStack stack; 
+
+	if (infExpr == NULL || postExpr == NULL) return NULL; // Osetreni chyby alokace a zadani spatneo vstupniho argumentu
+	stackInit (&stack);
+	while (42) {
+/* Zpracovava vstuni vyraz znak po znaku, dokud se neobjevi =, dale jsem zpracovani rozlozil do nasledujicich kroku:
+	1. '(' uloz do stacku			3. pri vyskytu operatoru nech vzhodnotit fci doOperation
+	2. pri ')' zavolej fci untilLeftPar	4. pri '=' zavolej znovu fci untiLeftPar, ktera je pro tento ucel upravena a pak rozbij cyklus
+*/
+		if (infExpr[infIndex] == '(') stackPush (&stack, '(');
+		else if (infExpr[infIndex] == ')') untilLeftPar (&stack, postExpr, &postIndex);
+		else if (infExpr[infIndex] == '+' || infExpr[infIndex] == '-' || infExpr[infIndex] == '*' || infExpr[infIndex] == '/') doOperation (&stack, infExpr[infIndex], postExpr, &postIndex);
+		else if (infExpr[infIndex] == '=') {
+			untilLeftPar (&stack, postExpr, &postIndex);
+			break;
+		}
+		else {
+			postExpr[postIndex] = infExpr[infIndex];
+			postIndex++;
+		}
+		infIndex++;
+	}
+	postExpr[postIndex] = '=';
+	postExpr[postIndex + 1] = '\0'; // Nakonec se doplni rovna se a konec stringu
+	return postExpr;
 }
 
 /* Konec c204.c */
