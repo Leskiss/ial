@@ -112,7 +112,7 @@ void DLInsertFirst (tDLList *L, int val) {
 ** volá funkci DLError().
 **/
 	
-	tDLElemPtr tmp = malloc (sizeof (tDLElemPtr)), first;
+	tDLElemPtr tmp = malloc (sizeof (struct tDLElem)), first;
 
 	if (tmp == NULL || L == NULL) DLError(); // Osetreni chyb
 	else {
@@ -134,7 +134,7 @@ void DLInsertLast(tDLList *L, int val) {
 ** volá funkci DLError().
 **/ 	
 	
-	tDLElemPtr tmp = malloc (sizeof (tDLElemPtr)), last;
+	tDLElemPtr tmp = malloc (sizeof (struct tDLElem)), last;
 
         if (tmp == NULL || L == NULL) DLError();
         else {
