@@ -278,7 +278,7 @@ void DLPostInsert (tDLList *L, int val) {
 	tDLElemPtr tmp, after;
 	
 	if (L != NULL && L->Act != NULL) {
-		tmp = malloc (sizeof (tDLElemPtr));
+		tmp = malloc (sizeof (struct tDLElem));
 		if (tmp == NULL) DLError();
 		else {
 			after = L->Act->rptr; // Ulozim si aktualnim prvek co je za aktivnim a doplnim nove vytvoreny
@@ -303,7 +303,7 @@ void DLPreInsert (tDLList *L, int val) {
 	tDLElemPtr tmp, before;
 
         if (L != NULL && L->Act != NULL) {
-                tmp = malloc (sizeof (tDLElemPtr));
+                tmp = malloc (sizeof (struct tDLElem));
                 if (tmp == NULL) DLError();
                 else {
                         before = L->Act->lptr; // Ulozim si aktualnim prvek co je pred aktivnim a doplnim nove vytvoreny
